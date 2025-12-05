@@ -97,6 +97,46 @@
             font-weight: 600;
             font-size: 0.95rem;
             line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .name-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Base styles for the lines - hidden by default */
+        .name-text::before,
+        .name-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 0; /* Start with 0 width for animation */
+            height: 2px;
+            background-color: #c0392b;
+            box-shadow: 0 0 1px rgba(192, 57, 43, 0.6);
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease-out;
+            border-radius: 2px;
+        }
+
+        /* First line of the X */
+        .name-text.struck::before {
+            width: 100%;
+            opacity: 0.9;
+            transform: translateY(-50%) rotate(-10deg);
+        }
+
+        /* Second line of the X - slight delay for drawing effect */
+        .name-text.struck::after {
+            width: 100%;
+            opacity: 0.9;
+            transform: translateY(-50%) rotate(10deg);
+            transition-delay: 0.1s;
         }
 
         .pawn-color {
@@ -276,7 +316,12 @@
             
             const nameCol = document.createElement('div');
             nameCol.className = 'item-name';
-            nameCol.textContent = name;
+            
+            // Create a dedicated span for the name text to apply the strike effect properly
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'name-text';
+            nameSpan.textContent = name;
+            nameCol.appendChild(nameSpan);
             
             if (subtext) {
                 const subSpan = document.createElement('span');
@@ -289,13 +334,13 @@
             check1.className = 'custom-checkbox';
             check1.dataset.type = 'check';
             check1.dataset.rowId = `${idPrefix}-${index}`;
-            check1.onclick = () => toggleCheck(check1, check2);
+            check1.onclick = () => toggleCheck(check1, check2, nameSpan);
             
             const check2 = document.createElement('div');
             check2.className = 'custom-checkbox';
             check2.dataset.type = 'question';
             check2.dataset.rowId = `${idPrefix}-${index}`;
-            check2.onclick = () => toggleQuestion(check2, check1);
+            check2.onclick = () => toggleQuestion(check2, check1, nameSpan);
 
             row.appendChild(nameCol);
             row.appendChild(check1);
@@ -314,20 +359,22 @@
         }
 
         // Logic
-        function toggleCheck(el, sibling) {
+        function toggleCheck(el, sibling, nameEl) {
             if (el.classList.contains('checked')) {
                 el.classList.remove('checked');
                 el.textContent = '';
+                nameEl.classList.remove('struck');
             } else {
                 el.classList.add('checked');
                 el.textContent = '✓';
+                nameEl.classList.add('struck');
                 // Remove sibling state
                 sibling.classList.remove('question');
                 if(sibling.textContent === '?') sibling.textContent = '';
             }
         }
 
-        function toggleQuestion(el, sibling) {
+        function toggleQuestion(el, sibling, nameEl) {
             if (el.classList.contains('question')) {
                 el.classList.remove('question');
                 el.textContent = '';
@@ -337,6 +384,7 @@
                 // Remove sibling state
                 sibling.classList.remove('checked');
                 if(sibling.textContent === '✓') sibling.textContent = '';
+                nameEl.classList.remove('struck');
             }
         }
 
@@ -346,6 +394,10 @@
             document.querySelectorAll('.custom-checkbox').forEach(el => {
                 el.classList.remove('checked', 'question');
                 el.textContent = '';
+            });
+
+            document.querySelectorAll('.name-text').forEach(el => {
+                el.classList.remove('struck');
             });
         }
 
