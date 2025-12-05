@@ -240,6 +240,19 @@
             h1 {
                 font-size: 2rem;
             }
+
+            /* Adjust strike thickness for mobile */
+            .name-text path {
+                stroke-width: 4;
+            }
+            
+            /* Specific adjustment for Tony Gourmet on mobile */
+            .name-text.shorter-strike svg {
+                width: 110%; /* Slightly wider to cover properly if text wraps */
+                left: -5%;
+                height: 150%; /* Reduce height to avoid being "gigante" */
+                top: -25%;
+            }
         }
     </style>
 </head>
