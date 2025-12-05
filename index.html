@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detetive - Bloco de Notas</title>
+    <style>
+        :root {
+            --primary-green: #2d5016;
+            --paper-bg: #f4f1ea;
+            --check-green: #27ae60;
+            --question-red: #c0392b;
+            --border-color: #8f8f8f;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e0e0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .notepad {
+            background-color: var(--paper-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--primary-green);
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            border-radius: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-header span:last-child {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 5px;
+            border-bottom: 1px dotted var(--border-color);
+            transition: background-color 0.2s;
+        }
+
+        .item-row:hover {
+            background-color: rgba(45, 80, 22, 0.05);
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.2;
+        }
+
+        .pawn-color {
+            display: block;
+            font-style: italic;
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .custom-checkbox {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            background-color: white;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .custom-checkbox:hover {
+            border-color: var(--primary-green);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Check states */
+        .custom-checkbox.checked {
+            border-color: var(--check-green);
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--check-green);
+        }
+
+        .custom-checkbox.question {
+            border-color: var(--question-red);
+            background-color: rgba(192, 57, 43, 0.1);
+            color: var(--question-red);
+        }
+
+        .controls {
+            margin-top: 30px;
+            text-align: center;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .btn-reset {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+        }
+
+        .btn-reset:hover {
+            background-color: #a93226;
+        }
+
+        .btn-reset:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 400px) {
+            .notepad {
+                padding: 10px;
+            }
+            
+            .custom-checkbox {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notepad">
+        <header>
+            <h1>DETETIVE</h1>
+        </header>
+
+        <div id="content-area">
+            <!-- Sections will be populated here to ensure clean structure -->
+            
+            <!-- SUSPEITOS -->
+            <div class="section">
+                <div class="section-header">
+                    <span>SUSPEITOS</span>
+                    <span>✓ / ?</span>
+                </div>
+                <div class="items-container" id="suspects-list">
+                    <!-- Items go here -->
+                </div>
+            </div>
+
+            <!-- ARMAS -->
+            <div class="section">
+                <div class="section-header">
+                    <span>ARMAS</span>
+                    <span>✓ / ?</span>
+                </div>
+                <div class="items-container" id="weapons-list">
+                    <!-- Items go here -->
+                </div>
+            </div>
+
+            <!-- LOCAIS -->
+            <div class="section">
+                <div class="section-header">
+                    <span>LOCAIS</span>
+                    <span>✓ / ?</span>
+                </div>
+                <div class="items-container" id="locations-list">
+                    <!-- Items go here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-reset" id="btn-reset">LIMPAR TUDO</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        const suspects = [
+            { name: "Sargento - Bigode", color: "Amarelo" },
+            { name: "Florista - Dona Branca", color: "Branco" },
+            { name: "Chef de cozinha - Tony Gourmet", color: "Marrom" },
+            { name: "Mordomo - James", color: "Azul" },
+            { name: "Médica - Dona Violeta", color: "Rosa" },
+            { name: "Dançarina - Srta. Rosa", color: "Vermelho" },
+            { name: "Coveiro - Sérgio Soturno", color: "Preto" },
+            { name: "Advogado - Sr. Marinho", color: "Verde" }
+        ];
+
+        const weapons = [
+            "ESPINGARDA", "PÁ", "PÉ-DE-CABRA", "TESOURA", 
+            "ARMA QUÍMICA", "VENENO", "SOCO INGLÊS", "FACA"
+        ];
+
+        const locations = [
+            "PREFEITURA", "RESTAURANTE", "FLORICULTURA", "BOATE", 
+            "HOSPITAL", "MANSÃO", "CEMITÉRIO", "PRAÇA", 
+            "HOTEL", "BANCO", "ESTAÇÃO DE TREM"
+        ];
+
+        // Render Functions
+        function createItemRow(name, subtext = null, idPrefix, index) {
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            
+            const nameCol = document.createElement('div');
+            nameCol.className = 'item-name';
+            nameCol.textContent = name;
+            
+            if (subtext) {
+                const subSpan = document.createElement('span');
+                subSpan.className = 'pawn-color';
+                subSpan.textContent = `Cor do peão - ${subtext}`;
+                nameCol.appendChild(subSpan);
+            }
+            
+            const check1 = document.createElement('div');
+            check1.className = 'custom-checkbox';
+            check1.dataset.type = 'check';
+            check1.dataset.rowId = `${idPrefix}-${index}`;
+            check1.onclick = () => toggleCheck(check1, check2);
+            
+            const check2 = document.createElement('div');
+            check2.className = 'custom-checkbox';
+            check2.dataset.type = 'question';
+            check2.dataset.rowId = `${idPrefix}-${index}`;
+            check2.onclick = () => toggleQuestion(check2, check1);
+
+            row.appendChild(nameCol);
+            row.appendChild(check1);
+            row.appendChild(check2);
+            
+            return row;
+        }
+
+        function renderSection(containerId, items, idPrefix, hasColor = false) {
+            const container = document.getElementById(containerId);
+            items.forEach((item, index) => {
+                const name = hasColor ? item.name : item;
+                const color = hasColor ? item.color : null;
+                container.appendChild(createItemRow(name, color, idPrefix, index));
+            });
+        }
+
+        // Logic
+        function toggleCheck(el, sibling) {
+            if (el.classList.contains('checked')) {
+                el.classList.remove('checked');
+                el.textContent = '';
+            } else {
+                el.classList.add('checked');
+                el.textContent = '✓';
+                // Remove sibling state
+                sibling.classList.remove('question');
+                if(sibling.textContent === '?') sibling.textContent = '';
+            }
+        }
+
+        function toggleQuestion(el, sibling) {
+            if (el.classList.contains('question')) {
+                el.classList.remove('question');
+                el.textContent = '';
+            } else {
+                el.classList.add('question');
+                el.textContent = '?';
+                // Remove sibling state
+                sibling.classList.remove('checked');
+                if(sibling.textContent === '✓') sibling.textContent = '';
+            }
+        }
+
+        function clearAll() {
+            if(!confirm('Tem certeza que deseja limpar todas as anotações?')) return;
+            
+            document.querySelectorAll('.custom-checkbox').forEach(el => {
+                el.classList.remove('checked', 'question');
+                el.textContent = '';
+            });
+        }
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSection('suspects-list', suspects, 'suspect', true);
+            renderSection('weapons-list', weapons, 'weapon', false);
+            renderSection('locations-list', locations, 'location', false);
+
+            document.getElementById('btn-reset').addEventListener('click', clearAll);
+        });
+
+    </script>
+</body>
+</html>
