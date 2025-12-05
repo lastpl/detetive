@@ -106,37 +106,44 @@
             position: relative;
             display: inline-block;
         }
-
-        /* Base styles for the lines - hidden by default */
-        .name-text::before,
-        .name-text::after {
-            content: '';
+        
+        /* SVG Scribble Styles */
+        .name-text svg {
             position: absolute;
-            top: 50%;
-            left: 0;
-            width: 0; /* Start with 0 width for animation */
-            height: 2px;
-            background-color: #c0392b;
-            box-shadow: 0 0 1px rgba(192, 57, 43, 0.6);
+            top: -50%;
+            left: -10%;
+            width: 120%;
+            height: 200%;
             pointer-events: none;
-            opacity: 0;
-            transition: all 0.3s ease-out;
-            border-radius: 2px;
+            z-index: 1;
+            overflow: visible;
+        }
+        
+        .name-text path {
+            stroke: #c0392b;
+            stroke-width: 6;
+            fill: none;
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            transition: stroke-dashoffset 0.4s ease-out;
+            stroke-linecap: round;
+            opacity: 0.9;
         }
 
-        /* First line of the X */
-        .name-text.struck::before {
-            width: 100%;
-            opacity: 0.9;
-            transform: translateY(-50%) rotate(-10deg);
+        /* Active state - Animate dashoffset to 0 */
+        .name-text.struck path {
+            stroke-dashoffset: 0;
         }
-
-        /* Second line of the X - slight delay for drawing effect */
-        .name-text.struck::after {
+        
+        /* Second path delay */
+        .name-text.struck path:nth-child(2) {
+            transition-delay: 0.3s;
+        }
+        
+        /* Specific adjustment for Tony Gourmet if needed, though SVG scaling might handle it */
+        .name-text.shorter-strike svg {
             width: 100%;
-            opacity: 0.9;
-            transform: translateY(-50%) rotate(10deg);
-            transition-delay: 0.1s;
+            left: 0;
         }
 
         .pawn-color {
@@ -321,6 +328,22 @@
             const nameSpan = document.createElement('span');
             nameSpan.className = 'name-text';
             nameSpan.textContent = name;
+            
+            // Inject SVG for scribble effect
+            nameSpan.innerHTML += `
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <!-- Path 1: Top-Right to Bottom-Left -->
+                    <path d="M 85,15 Q 50,50 15,85" />
+                    <!-- Path 2: Top-Left to Bottom-Right -->
+                    <path d="M 15,15 Q 50,50 85,85" />
+                </svg>
+            `;
+            
+            // Apply special class for Tony Gourmet to adjust strike width
+            if (name.includes('Tony Gourmet')) {
+                nameSpan.classList.add('shorter-strike');
+            }
+            
             nameCol.appendChild(nameSpan);
             
             if (subtext) {
