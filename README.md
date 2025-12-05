@@ -2,7 +2,7 @@
 
 Uma aplicação web simples e elegante projetada para substituir o bloco de notas de papel do clássico jogo de tabuleiro **Detetive**. Desenvolvida com tecnologias web padrão, oferece uma experiência interativa e responsiva para os jogadores.
 
-![Detetive Notepad Preview](https://img.shields.io/badge/Status-Functional-brightgreen)
+![Detetive Notepad Preview](./image.png)
 
 ## 📋 Funcionalidades
 
